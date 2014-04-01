@@ -15,7 +15,10 @@ module ColorPuz
 
     KEY_FUNCS = {
       Gosu::KbEscape =>  -> { close },
-#      Gosu::KbR      =>  -> { reset },
+      Gosu::KbR      =>  -> { reset },
+
+      Gosu::MsLeft   =>  -> { @position = Point.new( mouse_x, mouse_y ) }
+
 #      Gosu::KbP      =>  -> { @paused = !@paused },
 #
 #      Gosu::KbDown   =>  -> { @down_pressed = true },
@@ -25,7 +28,7 @@ module ColorPuz
     }
 
     def initialize( debug )
-      super( WIDTH, HEIGHT, false, 100 )
+      super( WIDTH, HEIGHT, false, 200 )
 
       self.caption = 'Gosu ColorPuz'
 
@@ -37,10 +40,15 @@ module ColorPuz
       reset
     end
 
+    def needs_cursor?   # Enable the mouse cursor
+      true
+    end
+
     def reset
-      @stack        = BlockMap.new
-      @paused       = false
-      @game_over    = false
+      @stack      = BlockMap.new
+      @paused     = false
+      @game_over  = false
+      @position   = nil
     end
 
     def update
@@ -48,14 +56,22 @@ module ColorPuz
     end
 
     def draw
-#      draw_background
+      draw_background
       @stack.draw( self )
 
       draw_overlays
     end
 
     def draw_background
-      @images[:background].draw( 0, 0, 0 )
+      draw_rectangle( Point.new( 0, 0 ), Size.new( WIDTH, HEIGHT ), 0, Gosu::Color::WHITE )
+#      @images[:background].draw( 0, 0, 0 )
+
+      point = Point.new( GAME_BORDER + MARGIN, HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+
+      COLOR_TABLE.each do |c|
+        Block.draw_absolute( self, point, c )
+        point.move_by!( BLOCK_SIZE + MARGIN, 0 )
+      end
     end
 
     def draw_overlays

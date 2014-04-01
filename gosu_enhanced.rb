@@ -32,28 +32,34 @@ class Size < Struct.new( :width, :height )
     self.width  += by_width
     self.height += by_height
   end
-end
 
-# Add a draw_rectangle() to Gosu which simplifies drawing a simple rectangle
-# in one colour
-class Gosu::Window
-  def draw_rectangle( point, size, z_index, colour )
-    left, top     = point.x, point.y
-    width, height = size.width, size.height
-
-    draw_quad(
-      left, top, colour,
-      left + width, top, colour,
-      left + width, top + height, colour,
-      left, top + height, colour,
-      z_index
-    )
+  def deflate!( by_width, by_height )
+    inflate!( -by_width, by_height )
   end
 end
 
-# Add a measure to return both width and height for a text
-class Gosu::Font
-  def measure( text )
-    Size.new( text_width( text, 1 ), height )
+module Gosu
+  # Add a draw_rectangle() to Window which simplifies drawing a simple rectangle
+  # in one colour
+  class Window
+    def draw_rectangle( point, size, z_index, colour )
+      left, top     = point.x, point.y
+      width, height = size.width, size.height
+
+      draw_quad(
+        left, top, colour,
+        left + width, top, colour,
+        left + width, top + height, colour,
+        left, top + height, colour,
+        z_index
+      )
+    end
+  end
+
+  # Add a measure to return both width and height for a text
+  class Font
+    def measure( text )
+      Size.new( text_width( text, 1 ), height )
+    end
   end
 end
