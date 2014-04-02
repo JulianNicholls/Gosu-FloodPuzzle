@@ -19,6 +19,8 @@ module ColorPuz
     PURPLE        = Gosu::Color.new( 0xff, 0x80, 0x00, 0x80 )
     RED           = Gosu::Color.new( 0xff, 0xd0, 0x00, 0x00 )
 
+    MOVES_COLOUR  = Gosu::Color.new( 0x80, 0x00, 0x00, 0x00 )
+
     COLOR_TABLE   = [CYAN, ORANGE, BLUE, PURPLE, YELLOW, GREEN]
   end
 end

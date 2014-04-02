@@ -9,25 +9,32 @@ module ColorPuz
       @blocks = Array.new( ROWS ) { Array.new( COLUMNS ) { rand( 6 ) } }
     end
 
-    def at( gpoint )
-      fail 'Invalid Row'    unless gpoint.row.between?( 0, ROWS - 1 )
-      fail 'Invalid Column' unless gpoint.column.between?( 0, COLUMNS - 1 )
-
-      @blocks[gpoint.row][gpoint.column]
+    def colour( x, y )
+      @blocks[x][y]
     end
+
+    # Change the colour of the blocks rooted at the top-left corner.
 
     def change_colour( colour )
-      return if @blocks[0, 0] == colour  # Cock-up
+      return false if colour( 0, 0 ) == colour  # Cock-up, colours not changed
 
-      changes = build_block_list
+      build_block_list
 
-      changes.each { |r, c| @blocks[r][c] = colour }
+      @change_list.each { |x, y| @blocks[x][y] = colour }
+
+      true    # Changed colours
     end
 
-    def game_over?
-      # Every block the same colour?
+    # Every block the same colour?
 
-      false
+    def game_over?
+      top_left = colour( 0, 0 )
+
+      ROWS.times do |y|
+        COLUMNS.times { |x| return false if colour( x, y ) != top_left }
+      end
+
+      true
     end
 
     # Draw the blocks
@@ -40,26 +47,46 @@ module ColorPuz
         end
       end
     end
-  end
 
-  private
+    private
 
-  def build_block_list
-    top_left = @blocks[0][0]
-    list = [[0, 0]]
+    # Build the list of positions in the block that is contiguous with the
+    # top-left corner and the same colour as it is
 
-    index = 0
+    def build_block_list
+      @change_list = [[0, 0]]
 
-    while index < list.size
-      x, y = list[index]
-      list << [x + 1, y] if x + 1 < COLUMNS && !list.include?( [x + 1, y] ) && @blocks[x + 1][y] == top_left
-      list << [x - 1, y] if x > 0 && !list.include?( [x - 1, y] ) && @blocks[x - 1][y] == top_left
-      list << [x, y + 1] if y + 1 < ROWS && !list.include?( [x, y + 1] ) && @blocks[x][y + 1] == top_left
-      list << [x, y - 1] if y > 0 && !list.include?( [x, y - 1] ) && @blocks[x][y - 1] == top_left
+      index = 0
 
-      index += 1
+      while index < @change_list.size
+        x, y = @change_list[index]
+        @change_list << [x + 1, y] if candidate?( x + 1, y )
+        @change_list << [x - 1, y] if candidate?( x - 1, y )
+        @change_list << [x, y + 1] if candidate?( x, y + 1 )
+        @change_list << [x, y - 1] if candidate?( x, y - 1 )
+
+        index += 1
+      end
     end
 
-    list
+    # Bring together the two tests below and whether the position is part of the
+    # top-left block
+
+    def candidate?( x, y )
+      in_grid?( x, y ) && !visited?( x, y ) && colour( x, y ) == colour( 0, 0 )
+    end
+
+    # Is the position inside the grid dimensions
+
+    def in_grid?( x, y )
+      x.between?( 0, COLUMNS - 1 ) && y.between?( 0, ROWS - 1 )
+    end
+
+    # Is the position already in the list?, actually not necessarily visited,
+    # but set for visitation nevertheless
+
+    def visited?( x, y )
+      @change_list.include?( [x, y] )
+    end
   end
 end

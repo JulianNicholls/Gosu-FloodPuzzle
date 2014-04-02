@@ -6,7 +6,8 @@ module ColorPuz
     def self.fonts( window )
       {
         score:    Gosu::Font.new( window, 'Arial', 30 ),
-        pause:    Gosu::Font.new( window, 'Arial', 56 )
+        pause:    Gosu::Font.new( window, 'Arial', 56 ),
+        moves:    Gosu::Font.new( window, 'Arial', 120 )
       }
     end
 
@@ -18,8 +19,8 @@ module ColorPuz
 
     def self.sounds( window )
       {
-        drop:   Gosu::Sample.new( window, 'media/Blip.wav' ),
-        smash:  Gosu::Sample.new( window, 'media/Explosion.wav' )
+        flip: Gosu::Sample.new( window, 'media/Blip.wav' ),
+        tada: Gosu::Sample.new( window, 'media/tada.wav' )
       }
     end
   end

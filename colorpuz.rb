@@ -7,6 +7,7 @@ require './blockmap'
 require './block'
 require './pausewindow'
 require './gameover'
+require './button'
 
 module ColorPuz
   # Tetris Game
@@ -18,13 +19,6 @@ module ColorPuz
       Gosu::KbR      =>  -> { reset },
 
       Gosu::MsLeft   =>  -> { @position = Point.new( mouse_x, mouse_y ) }
-
-#      Gosu::KbP      =>  -> { @paused = !@paused },
-#
-#      Gosu::KbDown   =>  -> { @down_pressed = true },
-#      Gosu::KbLeft   =>  -> { @cur.left },
-#      Gosu::KbRight  =>  -> { @cur.right },
-#      Gosu::KbUp     =>  -> { @cur.rotate }
     }
 
     def initialize( debug )
@@ -32,10 +26,12 @@ module ColorPuz
 
       self.caption = 'Gosu ColorPuz'
 
-#      @fonts  = ResourceLoader.fonts( self )
+      @fonts  = ResourceLoader.fonts( self )
 #      @images = ResourceLoader.images( self )
-#      @sounds = ResourceLoader.sounds( self )
-#      @debug  = debug
+      @sounds = ResourceLoader.sounds( self )
+      @debug  = debug
+
+      setup_buttons
 
       reset
     end
@@ -45,33 +41,65 @@ module ColorPuz
     end
 
     def reset
-      @stack      = BlockMap.new
+      @grid       = BlockMap.new
       @paused     = false
       @game_over  = false
       @position   = nil
+      @moves      = 0
     end
 
     def update
-#      @game_over = @stack.game_over?
+      update_game_over
+
+      update_flip if @position
+    end
+
+    def update_game_over
+      if !@game_over && @grid.game_over?
+        @sounds[:tada].play
+        @game_over = true
+      end
+    end
+
+    def update_flip
+      @buttons.each do |b|
+        if b.contains?( @position ) && @grid.change_colour( b.value )
+          @moves += 1
+          @sounds[:flip].play
+          break
+        end
+      end
+
+      @position = nil
     end
 
     def draw
       draw_background
-      @stack.draw( self )
+      @grid.draw( self )
+      draw_buttons
+      draw_moves
 
       draw_overlays
     end
 
     def draw_background
-      draw_rectangle( Point.new( 0, 0 ), Size.new( WIDTH, HEIGHT ), 0, Gosu::Color::WHITE )
+      draw_rectangle( Point.new( 0, 0 ), Size.new( WIDTH, HEIGHT ),
+                      0, Gosu::Color::WHITE )
+
 #      @images[:background].draw( 0, 0, 0 )
+    end
 
-      point = Point.new( GAME_BORDER + MARGIN, HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+    def draw_buttons
+      @buttons.each { |b| b.draw( self ) }
+    end
 
-      COLOR_TABLE.each do |c|
-        Block.draw_absolute( self, point, c )
-        point.move_by!( BLOCK_SIZE + MARGIN, 0 )
-      end
+    def draw_moves
+      text = @moves.to_s
+      size = @fonts[:moves].measure( text )
+
+      top  = GAME_BORDER + 5 * BLOCK_SIZE - size.height / 2
+      left = GAME_BORDER + 5 * BLOCK_SIZE - size.width / 2
+      @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
     end
 
     def draw_overlays
@@ -82,6 +110,20 @@ module ColorPuz
 
     def button_down( btn_id )
       instance_exec( &KEY_FUNCS[btn_id] )
+    end
+
+    private
+
+    def setup_buttons
+      @buttons = []
+
+      point = Point.new( GAME_BORDER + 2 * MARGIN,
+                         HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+
+      COLOR_TABLE.each_with_index do |c, idx|
+        @buttons << Button.new( point, c, idx )
+        point = point.offset( BLOCK_SIZE + MARGIN, 0 )
+      end
     end
   end
 end
