@@ -15,7 +15,6 @@ module ColorPuz
     end
 
     def draw( window )
-      puts to_s
       Block.draw_absolute( window, @origin, @colour )
     end
 

@@ -5,7 +5,6 @@ require './constants'
 require './resources'
 require './blockmap'
 require './block'
-require './pausewindow'
 require './gameover'
 require './button'
 
@@ -104,8 +103,6 @@ module ColorPuz
 
     def draw_overlays
       GameOverWindow.new( self ).draw && return if @game_over
-
-      PauseWindow.new( self ).draw if @paused
     end
 
     def button_down( btn_id )
