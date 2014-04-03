@@ -1,3 +1,5 @@
+require 'pp'
+
 require './constants'
 
 module ColorPuz
@@ -68,6 +70,8 @@ module ColorPuz
 
       build_block_list
 
+      colour = calculate_best_colour if colour > COLOR_TABLE.size
+
       @change_list.each { |x, y| @blocks[y][x] = colour }
 
       true    # Changed colours
@@ -98,6 +102,29 @@ module ColorPuz
 
     private
 
+    # Try to calculate what the best colour to change to would be, based on
+    # the number of blocks collected by changing to that colour.
+
+    def calculate_best_colour
+      top_left = colour( 0, 0 )   # Find what the top-left block is coloured now
+      counts   = Array.new( COLOR_TABLE.size, 0 )
+      @sorted_list = @change_list.sort
+
+      index = 0
+      line = 0
+      while index < @sorted_list.size
+        x, y = @sorted_list[index]
+        neighbours( x, y ).each do |c, r|
+          c = colour( c, r )
+          counts[c] += 1 if c != top_left
+        end
+        
+        index += 1
+      end
+      
+      return counts.index( counts.max );
+    end
+
     # Build the list of positions in the block that is contiguous with the
     # top-left corner and the same colour as it is
 
@@ -108,20 +135,28 @@ module ColorPuz
 
       while index < @change_list.size
         x, y = @change_list[index]
-        @change_list << [x + 1, y] if candidate?( x + 1, y )
-        @change_list << [x - 1, y] if candidate?( x - 1, y )
-        @change_list << [x, y + 1] if candidate?( x, y + 1 )
-        @change_list << [x, y - 1] if candidate?( x, y - 1 )
-
+        neighbours( x, y ).each do |c, r|
+          @change_list << [c, r] if candidate?( c, r )
+        end
         index += 1
       end
     end
+    
+    def neighbours( x, y )
+      neigh = []
+      neigh << [x - 1, y] if in_grid?( x - 1, y )
+      neigh << [x + 1, y] if in_grid?( x + 1, y )
+      neigh << [x, y - 1] if in_grid?( x, y - 1 )
+      neigh << [x, y + 1] if in_grid?( x, y + 1 )
 
-    # Bring together the two tests below and whether the position is part of the
+      neigh
+    end
+    
+    # Bring together the visited test below and whether the position is part of the
     # top-left block
 
     def candidate?( x, y )
-      in_grid?( x, y ) && !visited?( x, y ) && colour( x, y ) == colour( 0, 0 )
+      !visited?( x, y ) && colour( x, y ) == colour( 0, 0 )
     end
 
     # Is the position inside the grid dimensions
