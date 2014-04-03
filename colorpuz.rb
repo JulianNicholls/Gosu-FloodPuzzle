@@ -124,13 +124,8 @@ module ColorPuz
     def setup_buttons
       @buttons = []
 
-      if @debug
-        point = Point.new( GAME_BORDER + MARGIN,
-                           HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
-      else
-        point = Point.new( GAME_BORDER + 2 * MARGIN,
-                           HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
-      end
+      left  = @debug ? GAME_BORDER + MARGIN : GAME_BORDER + 2 * MARGIN
+      point = Point.new( left, HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
 
       COLOR_TABLE.each_with_index do |c, idx|
         @buttons << Button.new( self, point, c, idx )

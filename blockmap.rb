@@ -11,7 +11,9 @@ module ColorPuz
       if easy   # Some clustering
         setup_easy
       else      # Completely random
-        @blocks = Array.new( ROWS ) { Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) } }
+        @blocks = Array.new( ROWS ) do
+          Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) }
+        end
       end
 
       @original_blocks = copy_blocks
@@ -25,15 +27,6 @@ module ColorPuz
       @blocks = @original_blocks
     end
 
-    def copy_blocks
-      copy = Array.new( ROWS ) { Array.new( COLUMNS ) }
-      ROWS.times do |r|
-        COLUMNS.times { |c| copy[r][c] = @blocks[r][c] }
-      end
-      
-      copy
-    end
-    
     # Set up a slightly easier playing field. One in seven of the blocks will be
     # the same colour as its neighbour above or to the left
 
@@ -70,7 +63,7 @@ module ColorPuz
       return false if colour( 0, 0 ) == colour  # Cock-up, colours not changed
 
       if colour > COLOR_TABLE.size
-        colour = best_colour 
+        colour = best_colour
       else
         build_block_list
       end
@@ -105,10 +98,25 @@ module ColorPuz
 
     private
 
+    # Copy blocks so that they can be returned to later on, for example
+    # after calculating the optimal number of flips
+
+    def copy_blocks
+      copy = Array.new( ROWS ) { Array.new( COLUMNS ) }
+      ROWS.times do |r|
+        COLUMNS.times { |c| copy[r][c] = @blocks[r][c] }
+      end
+
+      copy
+    end
+
+    # Calculate the minimal number of flips necessary to finish the current grid.
+    # Actually, it's not quite optimal, since I've beaten it once already!
+
     def calculate_minimal_flips
       @optimal = 0
 
-      while !game_over?
+      until game_over?
         change_colour( best_colour )
         @optimal += 1
       end
@@ -158,6 +166,8 @@ module ColorPuz
         index += 1
       end
     end
+
+    # Return a list of the in-grid neighbours of the passed position
 
     def neighbours( x, y )
       neigh = []
