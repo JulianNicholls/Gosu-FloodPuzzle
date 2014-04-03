@@ -25,7 +25,7 @@ module ColorPuz
     def initialize( debug, easy )
       super( WIDTH, HEIGHT, false, 200 )
 
-      self.caption = 'Gosu ColorPuz'
+      self.caption = 'Gosu Flood Puzzle'
 
       @fonts  = ResourceLoader.fonts( self )
 #      @images = ResourceLoader.images( self )
