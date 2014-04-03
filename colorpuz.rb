@@ -55,7 +55,7 @@ module ColorPuz
 
     def update_game_over
       if !@game_over && @grid.game_over?
-        @sounds[:tada].play
+        @sounds[:tada][rand( @sounds[:tada].size )].play
         @game_over = true
       end
     end
