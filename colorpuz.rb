@@ -25,10 +25,9 @@ module ColorPuz
     def initialize( debug, easy )
       super( WIDTH, HEIGHT, false, 200 )
 
-      self.caption = 'Gosu Flood Puzzle'
+      self.caption = caption( debug, easy )
 
       @fonts  = ResourceLoader.fonts( self )
-#      @images = ResourceLoader.images( self )
       @sounds = ResourceLoader.sounds( self )
       @debug  = debug
       @easy   = easy
@@ -36,6 +35,14 @@ module ColorPuz
       setup_buttons
 
       reset
+    end
+
+    def caption( debug, easy )
+      caption = 'Gosu Flood Puzzle'
+      caption += ' (Easy)' if easy
+      caption += ' (Debug)' if debug
+
+      caption
     end
 
     def needs_cursor?   # Enable the mouse cursor
@@ -99,8 +106,8 @@ module ColorPuz
       text = @moves.to_s
       size = @fonts[:moves].measure( text )
 
-      top  = GAME_BORDER + ROWS/2 * BLOCK_SIZE - size.height / 2
-      left = GAME_BORDER + COLUMNS/2 * BLOCK_SIZE - size.width / 2
+      top  = GAME_BORDER + (ROWS / 2) * BLOCK_SIZE - (size.height / 2)
+      left = GAME_BORDER + (COLUMNS / 2) * BLOCK_SIZE - (size.width / 2)
       @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
     end
 
@@ -137,9 +144,6 @@ end
 
 debug = ARGV.include? '--debug'
 easy  = ARGV.include? '--easy'
-
-puts 'Debug Mode' if debug
-puts 'Easy Mode' if easy
 
 window = ColorPuz::Game.new( debug, easy )
 window.show

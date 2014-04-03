@@ -11,12 +11,12 @@ module ColorPuz
       if easy   # Some clustering
         setup_easy
       else      # Completely random
-        @blocks = Array.new( ROWS ) do
-          Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) }
-        end
+        @blocks = Array.new( ROWS ) { Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) } }
       end
 
-      @original_blocks = @blocks
+      @original_blocks = copy_blocks
+
+      calculate_minimal_flips
     end
 
     # Reset to the original created layout
@@ -25,12 +25,15 @@ module ColorPuz
       @blocks = @original_blocks
     end
 
-    # Revert to the blocks before the last colour change sweep.
-
-    def revert
-      @blocks = @last_blocks
+    def copy_blocks
+      copy = Array.new( ROWS ) { Array.new( COLUMNS ) }
+      ROWS.times do |r|
+        COLUMNS.times { |c| copy[r][c] = @blocks[r][c] }
+      end
+      
+      copy
     end
-
+    
     # Set up a slightly easier playing field. One in seven of the blocks will be
     # the same colour as its neighbour above or to the left
 
@@ -66,11 +69,11 @@ module ColorPuz
     def change_colour( colour )
       return false if colour( 0, 0 ) == colour  # Cock-up, colours not changed
 
-      @last_blocks = @blocks
-
-      build_block_list
-
-      colour = calculate_best_colour if colour > COLOR_TABLE.size
+      if colour > COLOR_TABLE.size
+        colour = best_colour 
+      else
+        build_block_list
+      end
 
       @change_list.each { |x, y| @blocks[y][x] = colour }
 
@@ -102,27 +105,41 @@ module ColorPuz
 
     private
 
+    def calculate_minimal_flips
+      @optimal = 0
+
+      while !game_over?
+        change_colour( best_colour )
+        @optimal += 1
+      end
+
+      puts "Optimal: #{@optimal}"
+      reset
+    end
+
     # Try to calculate what the best colour to change to would be, based on
     # the number of blocks collected by changing to that colour.
 
-    def calculate_best_colour
-      top_left = colour( 0, 0 )   # Find what the top-left block is coloured now
-      counts   = Array.new( COLOR_TABLE.size, 0 )
-      @sorted_list = @change_list.sort
+    def best_colour
+      build_block_list
+      top_left  = colour( 0, 0 )   # Find what the top-left block is coloured now
+      counts    = Array.new( COLOR_TABLE.size, 0 )
+      edges     = []
+      index     = 0
 
-      index = 0
-      line = 0
-      while index < @sorted_list.size
-        x, y = @sorted_list[index]
+      while index < @change_list.size
+        x, y = @change_list[index]
         neighbours( x, y ).each do |c, r|
-          c = colour( c, r )
-          counts[c] += 1 if c != top_left
+          col = colour( c, r )
+          edges << [col, c, r] if col != top_left && !edges.include?( [col, c, r] )
         end
-        
+
         index += 1
       end
-      
-      return counts.index( counts.max );
+
+      edges.each { |col, _, _| counts[col] += 1 }
+
+      counts.index( counts.max )
     end
 
     # Build the list of positions in the block that is contiguous with the
@@ -141,7 +158,7 @@ module ColorPuz
         index += 1
       end
     end
-    
+
     def neighbours( x, y )
       neigh = []
       neigh << [x - 1, y] if in_grid?( x - 1, y )
@@ -151,7 +168,7 @@ module ColorPuz
 
       neigh
     end
-    
+
     # Bring together the visited test below and whether the position is part of the
     # top-left block
 

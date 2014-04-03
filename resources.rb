@@ -12,12 +12,6 @@ module ColorPuz
       }
     end
 
-    def self.images( window )
-      {
-        background:   Gosu::Image.new( window, 'media/background.png', true )
-      }
-    end
-
     def self.sounds( window )
       {
         flip: Gosu::Sample.new( window, 'media/Blip.wav' ),
