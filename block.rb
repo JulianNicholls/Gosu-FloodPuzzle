@@ -1,29 +1,29 @@
 require './constants'
 
 module ColorPuz
-  # Hold a (row, column) position inside the ColorPuz grid
-  class GridPoint < Struct.new( :row, :column )
+  # Hold a (x, y) position inside the ColorPuz grid
+  class GridPoint < Struct.new( :column, :row )
     include Constants
 
-    def offset( by_row, by_column )
-      GridPoint.new( row + by_row, column + by_column )
+    def offset( by_column, by_row )
+      GridPoint.new( column + by_column, row + by_row )
     end
 
     def to_point
       Point.new( GAME_BORDER + column * BLOCK_SIZE, GAME_BORDER + row * BLOCK_SIZE )
     end
 
-    def move_by!( by_row, by_column )
-      self.row    += by_row
+    def move_by!( by_column, by_row )
       self.column += by_column
+      self.row    += by_row
     end
   end
 
-  # Draw a constituent block of a Tetris shape.
+  # Draw a block of colour.
   class Block
     include Constants
 
-    # Draw in the well, using a GridPoint
+    # Draw in the grid, using a GridPoint
 
     def self.draw( window, gridpoint, colour )
       draw_absolute( window, gridpoint.to_point, colour )

@@ -1,16 +1,48 @@
 require './constants'
 
 module ColorPuz
-  # Block Map, indexed Column then Row
+  # Block Map
   class BlockMap
     include Constants
 
-    def initialize
-      @blocks = Array.new( ROWS ) { Array.new( COLUMNS ) { rand( 6 ) } }
+    def initialize( easy = false )
+      if easy   # Some clustering
+        setup_easy
+      else      # Completely random
+        @blocks = Array.new( ROWS ) do
+          Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) }
+        end
+      end
+    end
+
+    # Set up a slightly easier playing field. One in seven of the blocks will be
+    # the same colour as its neighbour above or to the left
+
+    def setup_easy
+      @blocks = Array.new( ROWS ) { Array.new( COLUMNS ) }
+
+      ROWS.times do |y|
+        COLUMNS.times do |x|
+          if y > 0 && x > 0
+            colour = rand( -1..(COLOR_TABLE.size - 1) )
+            @blocks[y][x] = colour
+
+            set_neighbour_colour( x, y ) if colour == -1
+          else
+            @blocks[y][x] = rand( COLOR_TABLE.size )
+          end
+        end
+      end
+    end
+
+    def set_neighbour_colour( x, y )
+      xd = rand( 2 )
+      yd = 1 - xd
+      @blocks[y][x] = colour( x - xd, y - yd )
     end
 
     def colour( x, y )
-      @blocks[x][y]
+      @blocks[y][x]
     end
 
     # Change the colour of the blocks rooted at the top-left corner.
@@ -20,7 +52,7 @@ module ColorPuz
 
       build_block_list
 
-      @change_list.each { |x, y| @blocks[x][y] = colour }
+      @change_list.each { |x, y| @blocks[y][x] = colour }
 
       true    # Changed colours
     end
@@ -40,10 +72,10 @@ module ColorPuz
     # Draw the blocks
 
     def draw( window )
-      @blocks.each_with_index do |columns, ridx|
-        columns.each_with_index do |colour, cidx|
-          gpoint = GridPoint.new( ridx, cidx )
-          Block.draw( window, gpoint, COLOR_TABLE[colour] )
+      ROWS.times do |y|
+        COLUMNS.times do |x|
+          gpoint = GridPoint.new( x, y )
+          Block.draw( window, gpoint, COLOR_TABLE[colour( x, y )] )
         end
       end
     end

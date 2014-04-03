@@ -20,7 +20,7 @@ module ColorPuz
       Gosu::MsLeft   =>  -> { @position = Point.new( mouse_x, mouse_y ) }
     }
 
-    def initialize( debug )
+    def initialize( debug, easy )
       super( WIDTH, HEIGHT, false, 200 )
 
       self.caption = 'Gosu ColorPuz'
@@ -29,6 +29,7 @@ module ColorPuz
 #      @images = ResourceLoader.images( self )
       @sounds = ResourceLoader.sounds( self )
       @debug  = debug
+      @easy   = easy
 
       setup_buttons
 
@@ -40,7 +41,7 @@ module ColorPuz
     end
 
     def reset
-      @grid       = BlockMap.new
+      @grid       = BlockMap.new( @easy )
       @paused     = false
       @game_over  = false
       @position   = nil
@@ -125,8 +126,11 @@ module ColorPuz
   end
 end
 
-debug = ARGV.first == '--debug'
-puts 'Debug Mode' if debug
+debug = ARGV.include? '--debug'
+easy  = ARGV.include? '--easy'
 
-window = ColorPuz::Game.new( debug )
+puts 'Debug Mode' if debug
+puts 'Easy Mode' if debug
+
+window = ColorPuz::Game.new( debug, easy )
 window.show
