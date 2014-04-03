@@ -2,9 +2,9 @@ module ColorPuz
   # Constants for the Tetris Game
   module Constants
     GAME_BORDER   = 5
-    COLUMNS       = 10
-    ROWS          = 10
-    BLOCK_SIZE    = 50
+    COLUMNS       = 12
+    ROWS          = 12
+    BLOCK_SIZE    = 40
 
     MARGIN        = 20
 

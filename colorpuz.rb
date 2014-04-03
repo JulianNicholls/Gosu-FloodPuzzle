@@ -99,8 +99,8 @@ module ColorPuz
       text = @moves.to_s
       size = @fonts[:moves].measure( text )
 
-      top  = GAME_BORDER + 5 * BLOCK_SIZE - size.height / 2
-      left = GAME_BORDER + 5 * BLOCK_SIZE - size.width / 2
+      top  = GAME_BORDER + ROWS/2 * BLOCK_SIZE - size.height / 2
+      left = GAME_BORDER + COLUMNS/2 * BLOCK_SIZE - size.width / 2
       @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
     end
 
