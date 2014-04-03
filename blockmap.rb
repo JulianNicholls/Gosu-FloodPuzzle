@@ -13,6 +13,20 @@ module ColorPuz
           Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) }
         end
       end
+
+      @original_blocks = @blocks
+    end
+
+    # Reset to the original created layout
+
+    def reset
+      @blocks = @original_blocks
+    end
+
+    # Revert to the blocks before the last colour change sweep.
+
+    def revert
+      @blocks = @last_blocks
     end
 
     # Set up a slightly easier playing field. One in seven of the blocks will be
@@ -49,6 +63,8 @@ module ColorPuz
 
     def change_colour( colour )
       return false if colour( 0, 0 ) == colour  # Cock-up, colours not changed
+
+      @last_blocks = @blocks
 
       build_block_list
 

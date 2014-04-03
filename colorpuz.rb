@@ -13,6 +13,8 @@ module ColorPuz
   class Game < Gosu::Window
     include Constants
 
+    attr_reader :fonts
+
     KEY_FUNCS = {
       Gosu::KbEscape =>  -> { close },
       Gosu::KbR      =>  -> { reset },
@@ -90,7 +92,7 @@ module ColorPuz
     end
 
     def draw_buttons
-      @buttons.each { |b| b.draw( self ) }
+      @buttons.each { |b| b.draw }
     end
 
     def draw_moves
@@ -115,13 +117,20 @@ module ColorPuz
     def setup_buttons
       @buttons = []
 
-      point = Point.new( GAME_BORDER + 2 * MARGIN,
-                         HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+      if @debug
+        point = Point.new( GAME_BORDER + MARGIN,
+                           HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+      else
+        point = Point.new( GAME_BORDER + 2 * MARGIN,
+                           HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+      end
 
       COLOR_TABLE.each_with_index do |c, idx|
-        @buttons << Button.new( point, c, idx )
+        @buttons << Button.new( self, point, c, idx )
         point = point.offset( BLOCK_SIZE + MARGIN, 0 )
       end
+
+      @buttons << TextButton.new( self, point, RED, 99, 'Auto' ) if @debug
     end
   end
 end
@@ -130,7 +139,7 @@ debug = ARGV.include? '--debug'
 easy  = ARGV.include? '--easy'
 
 puts 'Debug Mode' if debug
-puts 'Easy Mode' if debug
+puts 'Easy Mode' if easy
 
 window = ColorPuz::Game.new( debug, easy )
 window.show

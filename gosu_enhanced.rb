@@ -28,6 +28,10 @@ class Size < Struct.new( :width, :height )
     Size.new( width + by_width, height + by_height )
   end
 
+  def deflate( by_width, by_height )
+    inflate( -by_width, -by_height )
+  end
+
   def inflate!( by_width, by_height )
     self.width  += by_width
     self.height += by_height

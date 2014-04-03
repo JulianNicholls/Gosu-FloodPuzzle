@@ -5,9 +5,10 @@ module ColorPuz
   class ResourceLoader
     def self.fonts( window )
       {
-        score:    Gosu::Font.new( window, 'Arial', 30 ),
-        pause:    Gosu::Font.new( window, 'Arial', 56 ),
-        moves:    Gosu::Font.new( window, 'Arial', 120 )
+        button: Gosu::Font.new( window, 'Arial', 14 ),
+        score:  Gosu::Font.new( window, 'Arial', 30 ),
+        pause:  Gosu::Font.new( window, 'Arial', 56 ),
+        moves:  Gosu::Font.new( window, 'Arial', 120 )
       }
     end
 
