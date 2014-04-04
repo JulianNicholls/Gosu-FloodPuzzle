@@ -57,6 +57,7 @@ module ColorPuz
       @game_over  = false
       @position   = nil
       @moves      = 0
+      @start      = Time.now
     end
 
     def update
@@ -89,14 +90,12 @@ module ColorPuz
       @grid.draw( self )
       draw_buttons
       draw_moves
+      draw_time
 
       draw_overlays
     end
 
     def draw_background
-#      draw_rectangle( Point.new( 0, 0 ), Size.new( WIDTH, HEIGHT ),
-#                      0, Gosu::Color::WHITE )
-
       @images[:background].draw( 0, 0, 0 )
     end
 
@@ -108,8 +107,18 @@ module ColorPuz
       text = "Moves: #{@moves}"
       size = @fonts[:moves].measure( text )
 
-      top  = GAME_BORDER + 10
+      top  = GAME_BORDER + 7
       left = GAME_BORDER * 4
+      @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
+    end
+
+    def draw_time
+      elapsed = Time.now - @start
+      text = sprintf( "Time: %3ds", elapsed.floor )
+      size = @fonts[:moves].measure( text )
+
+      top  = GAME_BORDER + 7
+      left = WIDTH - (GAME_BORDER * 4) - size.width
       @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
     end
 
