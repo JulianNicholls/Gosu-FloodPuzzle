@@ -8,7 +8,13 @@ module ColorPuz
         button: Gosu::Font.new( window, 'Arial', 14 ),
         score:  Gosu::Font.new( window, 'Arial', 30 ),
         pause:  Gosu::Font.new( window, 'Arial', 56 ),
-        moves:  Gosu::Font.new( window, 'Arial', 120 )
+        moves:  Gosu::Font.new( window, 'Arial', 20 )
+      }
+    end
+    
+    def self.images( window )
+      {
+        background: Gosu::Image.new( window, 'media/background.png', true )
       }
     end
 

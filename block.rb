@@ -10,7 +10,7 @@ module ColorPuz
     end
 
     def to_point
-      Point.new( GAME_BORDER + column * BLOCK_SIZE, GAME_BORDER + row * BLOCK_SIZE )
+      Point.new( GAME_BORDER + column * BLOCK_SIZE, GAME_BORDER * 2 + HEADER_HEIGHT + row * BLOCK_SIZE )
     end
 
     def move_by!( by_column, by_row )

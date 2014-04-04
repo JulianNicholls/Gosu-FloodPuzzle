@@ -7,7 +7,7 @@ module ColorPuz
   class GameOverWindow < OverlayWindow
     include Constants
 
-    P_ORIGIN  = Point.new( GAME_BORDER + BLOCK_SIZE, GAME_BORDER + BLOCK_SIZE )
+    P_ORIGIN  = Point.new( GAME_BORDER + BLOCK_SIZE, GAME_BORDER * 2 + HEADER_HEIGHT + BLOCK_SIZE )
     P_SIZE    = Size.new( WIDTH - (P_ORIGIN.x * 2), (ROWS - 2) * BLOCK_SIZE  )
 
     def draw

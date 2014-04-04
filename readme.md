@@ -13,18 +13,22 @@ Obviously, the idea is to make all the blocks the same colour.
 
 #### Timing and Scoring. 
 
-I'm not sure how to score it...
+I think I know how to do it now...
 
-Fewer moves and a shorter time will score more highly. I'm not sure what 
-weight I'll give to each of those.
+Base score for a round will be 10,000,000 in the spirit of huge scoring everywhere :-)
+This will be multiplied by 'optimal' moves (see below) divided by actual moves 
+and again by 3 seconds per 'optimal' move divided by actual time.
 
-There is obviously a way to compute the fewest possible moves for a given 
-grid and I am thinking about that as a basis of the scoring. 
+Hence completing a 23 move grid in 24 moves and 60 seconds will score:
+
+```
+(23 / 24) * (69 / 60) * 10,000,000 = 11,020,833
+```
 
 ## Updated in this version
 
-Easy mode, accessed via --easy on the command line. This makes a proportion of
-blocks the same colour as one of its neighbours, reducing randomness slightly.
+There is a sub-optimal algorithm used to compute the fewest possible moves 
+for a given grid which I will use as basis for the scoring. 
 
 ## Keys
 

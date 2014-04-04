@@ -28,7 +28,9 @@ module ColorPuz
       self.caption = caption( debug, easy )
 
       @fonts  = ResourceLoader.fonts( self )
+      @images = ResourceLoader.images( self )
       @sounds = ResourceLoader.sounds( self )
+
       @debug  = debug
       @easy   = easy
 
@@ -92,10 +94,10 @@ module ColorPuz
     end
 
     def draw_background
-      draw_rectangle( Point.new( 0, 0 ), Size.new( WIDTH, HEIGHT ),
-                      0, Gosu::Color::WHITE )
+#      draw_rectangle( Point.new( 0, 0 ), Size.new( WIDTH, HEIGHT ),
+#                      0, Gosu::Color::WHITE )
 
-#      @images[:background].draw( 0, 0, 0 )
+      @images[:background].draw( 0, 0, 0 )
     end
 
     def draw_buttons
@@ -103,11 +105,11 @@ module ColorPuz
     end
 
     def draw_moves
-      text = @moves.to_s
+      text = "Moves: #{@moves}"
       size = @fonts[:moves].measure( text )
 
-      top  = GAME_BORDER + (ROWS / 2) * BLOCK_SIZE - (size.height / 2)
-      left = GAME_BORDER + (COLUMNS / 2) * BLOCK_SIZE - (size.width / 2)
+      top  = GAME_BORDER + 10
+      left = GAME_BORDER * 4
       @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
     end
 
