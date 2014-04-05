@@ -2,21 +2,19 @@ require 'pp'
 
 require './constants'
 
-module ColorPuz
+module FloodPuzzle
   # Block Map
   class BlockMap
     include Constants
 
-    def initialize( easy = false )
-      if easy   # Some clustering
-        setup_easy
-      else      # Completely random
-        @blocks = Array.new( ROWS ) do
-          Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) }
-        end
-      end
+    attr_reader :optimal
+
+    def initialize( easier = false )
+      setup_random
+      setup_easier if easier
 
       @original_blocks = copy_blocks
+      @tlc = @blocks[0][0]
 
       calculate_minimal_flips
     end
@@ -27,48 +25,48 @@ module ColorPuz
       @blocks = @original_blocks
     end
 
+    # Generate the block colours entirely randomly
+
+    def setup_random
+      @blocks = Array.new( ROWS ) do
+        Array.new( COLUMNS ) { rand( COLOR_TABLE.size ) }
+      end
+    end
+
     # Set up a slightly easier playing field. One in seven of the blocks will be
     # the same colour as its neighbour above or to the left
 
-    def setup_easy
-      @blocks = Array.new( ROWS ) { Array.new( COLUMNS ) }
-
-      ROWS.times do |y|
-        COLUMNS.times do |x|
-          if y > 0 && x > 0
-            colour = rand( -1..(COLOR_TABLE.size - 1) )
-            @blocks[y][x] = colour
-
-            set_neighbour_colour( x, y ) if colour == -1
-          else
-            @blocks[y][x] = rand( COLOR_TABLE.size )
-          end
+    def setup_easier
+      (1..ROWS - 1).each do |y|
+        (1..COLUMNS - 1).each do |x|
+          set_neighbour_colour( x, y ) if rand( -1..COLOR_TABLE.size - 1 ) == -1
         end
       end
     end
 
+    # Randomly choose either the block above or left to copy the colour from.
+
     def set_neighbour_colour( x, y )
       xd = rand( 2 )
       yd = 1 - xd
-      @blocks[y][x] = colour( x - xd, y - yd )
-    end
-
-    def colour( x, y )
-      @blocks[y][x]
+      @blocks[y][x] = @blocks[y - yd][x - xd]
     end
 
     # Change the colour of the blocks rooted at the top-left corner.
 
     def change_colour( colour )
-      return false if colour( 0, 0 ) == colour  # Cock-up, colours not changed
+      # Return false if the top-left colour is already the colour requested
+      
+      puts "colour=#{colour}, tlc=#{@tlc}" and return false if @tlc == colour
+      
+      build_block_list
 
-      if colour > COLOR_TABLE.size
-        colour = best_colour
-      else
-        build_block_list
-      end
+      # Debugging 'Auto' button
+
+      colour = best_colour if colour > COLOR_TABLE.size
 
       @change_list.each { |x, y| @blocks[y][x] = colour }
+      @tlc = @blocks[0][0]
 
       true    # Changed colours
     end
@@ -76,10 +74,8 @@ module ColorPuz
     # Every block the same colour?
 
     def game_over?
-      top_left = colour( 0, 0 )
-
       ROWS.times do |y|
-        COLUMNS.times { |x| return false if colour( x, y ) != top_left }
+        COLUMNS.times { |x| return false if @blocks[y][x] != @tlc }
       end
 
       true
@@ -90,8 +86,7 @@ module ColorPuz
     def draw( window )
       ROWS.times do |y|
         COLUMNS.times do |x|
-          gpoint = GridPoint.new( x, y )
-          Block.draw( window, gpoint, COLOR_TABLE[colour( x, y )] )
+          Block.draw( window, GridPoint.new( x, y ), COLOR_TABLE[@blocks[y][x]] )
         end
       end
     end
@@ -102,16 +97,11 @@ module ColorPuz
     # after calculating the optimal number of flips
 
     def copy_blocks
-      copy = Array.new( ROWS ) { Array.new( COLUMNS ) }
-      ROWS.times do |r|
-        COLUMNS.times { |c| copy[r][c] = @blocks[r][c] }
-      end
-
-      copy
+      @blocks.map( &:dup )
     end
 
     # Calculate the minimal number of flips necessary to finish the current grid.
-    # Actually, it's not quite optimal, since I've beaten it once already!
+    # Actually, it's not quite optimal, since I've beaten it several times!
 
     def calculate_minimal_flips
       @optimal = 0
@@ -130,19 +120,15 @@ module ColorPuz
 
     def best_colour
       build_block_list
-      top_left  = colour( 0, 0 )   # Find what the top-left block is coloured now
+
       counts    = Array.new( COLOR_TABLE.size, 0 )
       edges     = []
-      index     = 0
 
-      while index < @change_list.size
-        x, y = @change_list[index]
+      @change_list.each do |x, y|
         neighbours( x, y ).each do |c, r|
-          col = colour( c, r )
-          edges << [col, c, r] if col != top_left && !edges.include?( [col, c, r] )
+          col = @blocks[r][c]
+          edges << [col, c, r] if col != @tlc && !edges.include?( [col, c, r] )
         end
-
-        index += 1
       end
 
       edges.each { |col, _, _| counts[col] += 1 }
@@ -156,14 +142,10 @@ module ColorPuz
     def build_block_list
       @change_list = [[0, 0]]
 
-      index = 0
-
-      while index < @change_list.size
-        x, y = @change_list[index]
+      @change_list.each do |x, y|
         neighbours( x, y ).each do |c, r|
           @change_list << [c, r] if candidate?( c, r )
         end
-        index += 1
       end
     end
 
@@ -183,7 +165,7 @@ module ColorPuz
     # top-left block
 
     def candidate?( x, y )
-      !visited?( x, y ) && colour( x, y ) == colour( 0, 0 )
+      !visited?( x, y ) && @blocks[y][x] == @tlc
     end
 
     # Is the position inside the grid dimensions
