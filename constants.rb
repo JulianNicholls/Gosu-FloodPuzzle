@@ -1,4 +1,4 @@
-module ColorPuz
+module FloodPuzzle
   # Constants for the Tetris Game
   module Constants
     GAME_BORDER   = 5
@@ -9,8 +9,10 @@ module ColorPuz
 
     MARGIN        = 20
 
+    GRID_ORIGIN   = Point.new( GAME_BORDER, GAME_BORDER * 2 + HEADER_HEIGHT )
+
     WIDTH         = GAME_BORDER * 2 + COLUMNS * BLOCK_SIZE
-    HEIGHT        = GAME_BORDER * 3 + HEADER_HEIGHT + 
+    HEIGHT        = GAME_BORDER * 3 + HEADER_HEIGHT +
                     ROWS * BLOCK_SIZE + 2 * MARGIN + BLOCK_SIZE
 
     CYAN          = Gosu::Color.new( 0xff, 0x00, 0xe0, 0xe0 )

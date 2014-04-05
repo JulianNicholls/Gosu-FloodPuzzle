@@ -1,7 +1,7 @@
 require './constants'
 
-module ColorPuz
-  # Hold a (x, y) position inside the ColorPuz grid
+module FloodPuzzle
+  # Hold a (x, y) position inside the FloodPuzzle grid
   class GridPoint < Struct.new( :column, :row )
     include Constants
 
@@ -10,7 +10,7 @@ module ColorPuz
     end
 
     def to_point
-      Point.new( GAME_BORDER + column * BLOCK_SIZE, GAME_BORDER * 2 + HEADER_HEIGHT + row * BLOCK_SIZE )
+      GRID_ORIGIN.offset( column * BLOCK_SIZE, row * BLOCK_SIZE )
     end
 
     def move_by!( by_column, by_row )
