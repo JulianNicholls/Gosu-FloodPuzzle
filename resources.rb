@@ -1,17 +1,17 @@
 # Resource Loader
 
-module ColorPuz
-  # Resource Loader for Tetris
+module FloodPuzzle
+  # Resource Loader
   class ResourceLoader
     def self.fonts( window )
       {
         button: Gosu::Font.new( window, 'Arial', 14 ),
-        score:  Gosu::Font.new( window, 'Arial', 30 ),
-        pause:  Gosu::Font.new( window, 'Arial', 56 ),
-        moves:  Gosu::Font.new( window, 'Arial', 22 )
+        moves:  Gosu::Font.new( window, 'Arial', 24 ),
+        header: Gosu::Font.new( window, 'Arial', 56 ),
+        info:   Gosu::Font.new( window, 'Arial', 30 )
       }
     end
-    
+
     def self.images( window )
       {
         background: Gosu::Image.new( window, 'media/background.png', true )
