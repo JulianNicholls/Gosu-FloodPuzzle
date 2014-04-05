@@ -8,16 +8,16 @@ require './block'
 require './gameover'
 require './button'
 
-module ColorPuz
+module FloodPuzzle
   # Tetris Game
   class Game < Gosu::Window
     include Constants
 
-    attr_reader :fonts
+    attr_reader :fonts, :score
 
     KEY_FUNCS = {
-      Gosu::KbEscape =>  -> { close },
-      Gosu::KbR      =>  -> { reset },
+      Gosu::KbEscape =>  -> { close if @debug || @game_over },
+      Gosu::KbR      =>  -> { reset if @game_over },
 
       Gosu::MsLeft   =>  -> { @position = Point.new( mouse_x, mouse_y ) }
     }
@@ -53,11 +53,12 @@ module ColorPuz
 
     def reset
       @grid       = BlockMap.new( @easy )
-      @paused     = false
       @game_over  = false
       @position   = nil
       @moves      = 0
       @start      = Time.now
+      @elapsed    = 0
+      @score      = 0
     end
 
     def update
@@ -69,6 +70,7 @@ module ColorPuz
     def update_game_over
       if !@game_over && @grid.game_over?
         @sounds[:tada][rand( @sounds[:tada].size )].play
+        @score = calculate_score
         @game_over = true
       end
     end
@@ -104,22 +106,18 @@ module ColorPuz
     end
 
     def draw_moves
-      text = "Moves: #{@moves}"
-      size = @fonts[:moves].measure( text )
-
-      top  = GAME_BORDER + 7
-      left = GAME_BORDER * 4
-      @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
+      @fonts[:moves].draw( "Moves: #{@moves}", GAME_BORDER * 4, GAME_BORDER + 7, 4,
+                           1, 1, MOVES_COLOUR )
     end
 
     def draw_time
-      elapsed = Time.now - @start
-      text = sprintf( "Time: %3ds", elapsed.floor )
+      @elapsed = (Time.now - @start).round unless @game_over
+
+      text = format( 'Time: %3ds', @elapsed )
       size = @fonts[:moves].measure( text )
 
-      top  = GAME_BORDER + 7
       left = WIDTH - (GAME_BORDER * 4) - size.width
-      @fonts[:moves].draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
+      @fonts[:moves].draw( text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
     end
 
     def draw_overlays
@@ -145,11 +143,17 @@ module ColorPuz
 
       @buttons << TextButton.new( self, point, RED, 99, 'Auto' ) if @debug
     end
+
+    def calculate_score
+      # 10,000,000 * optimal_moves * (3s per move) / (flips * seconds)
+
+      10_000_000 * @grid.optimal * @grid.optimal * 3 / (@moves * @elapsed)
+    end
   end
 end
 
 debug = ARGV.include? '--debug'
 easy  = ARGV.include? '--easy'
 
-window = ColorPuz::Game.new( debug, easy )
+window = FloodPuzzle::Game.new( debug, easy )
 window.show
