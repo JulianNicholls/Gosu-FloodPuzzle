@@ -2,7 +2,7 @@ require './constants'
 require './gosu_enhanced'
 require './resources'
 
-module ColorPuz
+module FloodPuzzle
   # Show an overlay window
   class OverlayWindow
     include Constants

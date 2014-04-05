@@ -1,7 +1,7 @@
 require './constants'
 require './block'
 
-module ColorPuz
+module FloodPuzzle
   # Button class
   class Button
     include Constants
@@ -29,7 +29,7 @@ module ColorPuz
     end
   end
 
-  # Textual Button that sizes itself based on its content
+  # Textual Button that sizes itself based on its text content
   class TextButton < Button
     def initialize( window, origin, colour, value, text )
       super( window, origin, colour, value )
@@ -40,11 +40,16 @@ module ColorPuz
     end
 
     def draw
+      # Black outline
       @window.draw_rectangle( @origin, @size, 1, Gosu::Color::BLACK )
+
+      # White interior
 
       @window.draw_rectangle(
         @origin.offset( 1, 1 ), @size.deflate( 2, 2 ), 1, Gosu::Color::WHITE
       )
+
+      # Passed olour used for text
 
       @window.fonts[:button].draw(
         @text, @origin.x + 2 * @text_size.width / @text.size,
@@ -55,11 +60,12 @@ module ColorPuz
     private
 
     # Measure the button text and make the overall button size twice the height
-    # and about fouir letters more than the width.
+    # and about four letters more than the width.
 
     def measure_size
       @text_size = @window.fonts[:button].measure( @text )
-      ave_width = @text_size.width / @text.size
+      ave_width  = @text_size.width / @text.size
+
       @size = Size.new( @text_size.width + 4 * ave_width, @text_size.height * 2 )
     end
   end
