@@ -1,4 +1,6 @@
-# Colo(u)r Puzzle
+#! /usr/bin/env ruby
+
+require 'net/http'
 
 require './gosu_enhanced'
 require './constants'
@@ -9,7 +11,7 @@ require './gameover'
 require './button'
 
 module FloodPuzzle
-  # Tetris Game
+  # Colour Flooding Game
   class Game < Gosu::Window
     include Constants
 
@@ -53,6 +55,7 @@ module FloodPuzzle
 
     def reset
       @grid       = BlockMap.new( @easy )
+      @optimal    = @grid.optimal
       @game_over  = false
       @position   = nil
       @moves      = 0
@@ -72,6 +75,8 @@ module FloodPuzzle
         @sounds[:tada][rand( @sounds[:tada].size )].play
         @score = calculate_score
         @game_over = true
+
+        post_game_score
       end
     end
 
@@ -106,14 +111,19 @@ module FloodPuzzle
     end
 
     def draw_moves
-      @fonts[:moves].draw( "Moves: #{@moves}", GAME_BORDER * 4, GAME_BORDER + 7, 4,
-                           1, 1, MOVES_COLOUR )
+      font        = @fonts[:moves]
+      text        = 'Moves  '
+      size        = font.text_width( text )
+      move_colour = @moves <= @optimal ? GREEN : RED
+      font.draw( text, GAME_BORDER * 4, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
+      font.draw( "#{@moves} / #{@optimal}",
+                 GAME_BORDER * 4 + size, GAME_BORDER + 7, 4, 1, 1, move_colour )
     end
 
     def draw_time
       @elapsed = (Time.now - @start).round unless @game_over
 
-      text = format( 'Time: %3ds', @elapsed )
+      text = format( 'Time  %d:%02d', @elapsed / 60, @elapsed % 60 )
       size = @fonts[:moves].measure( text )
 
       left = WIDTH - (GAME_BORDER * 4) - size.width
@@ -147,7 +157,17 @@ module FloodPuzzle
     def calculate_score
       # 10,000,000 * optimal_moves * (3s per move) / (flips * seconds)
 
-      10_000_000 * @grid.optimal * @grid.optimal * 3 / (@moves * @elapsed)
+      10_000_000 * @optimal * @optimal * 3 / (@moves * @elapsed)
+    end
+
+    def post_game_score
+      stamp = Time.now.strftime( '%Y-%m-%d %H:%M' )
+      str = "#{stamp}, #{@moves}/#{@optimal}, " +
+            format( '%d:%02d', @elapsed / 60, @elapsed % 60 ) +
+            ", #{@score}"
+
+      uri = URI( 'http://localhost:8888/flood-puzzle/index.php' )
+      Net::HTTP.post_form( uri, 'new' => str )
     end
   end
 end
