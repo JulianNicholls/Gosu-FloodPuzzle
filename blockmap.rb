@@ -14,9 +14,10 @@ module FloodPuzzle
       setup_easier if easier
 
       @original_blocks = copy_blocks
-      @tlc = @blocks[0][0]
 
       calculate_minimal_flips
+
+      @tlc = @blocks[0][0]
     end
 
     # Reset to the original created layout
@@ -56,9 +57,9 @@ module FloodPuzzle
 
     def change_colour( colour )
       # Return false if the top-left colour is already the colour requested
-      
-      puts "colour=#{colour}, tlc=#{@tlc}" and return false if @tlc == colour
-      
+
+      return false if @tlc == colour
+
       build_block_list
 
       # Debugging 'Auto' button
@@ -111,7 +112,6 @@ module FloodPuzzle
         @optimal += 1
       end
 
-      puts "Optimal: #{@optimal}"
       reset
     end
 
