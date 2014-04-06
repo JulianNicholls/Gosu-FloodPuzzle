@@ -9,15 +9,13 @@ Click on a colour button at the bottom and all of the blocks that are the same
 colour as the top left corner and next to it will change to that colour.
 Obviously, the idea is to make all the blocks the same colour.
 
-## Features to come
+## Keys
 
-Running score?
+Esc Exits in debug mode
 
-Score stored somewhere.
+R   Restarts after the game is over
 
-## Updated in this version
-
-#### Timing and Scoring.
+## Timing and Scoring.
 
 Base score for a round will be 10,000,000, in the spirit of huge scoring everywhere :-)
 This will be multiplied by 'optimal' moves (see below) divided by actual moves
@@ -32,8 +30,15 @@ Hence, completing a 23 move grid in 24 moves and 60 seconds will score:
 There is a sub-optimal algorithm used to compute the fewest possible moves
 for a given grid which I use as basis for the scoring.
 
-## Keys
+## Updated in this version
 
-Esc Exits in debug mode
+An option to use freeware font Good Times from Typodermic Fonts, Inc. 
+It can be downloaded [here](http://www.1001fonts.com/sans-serif-fonts.html). 
+Otherwise, the system Arial font is used.
 
-R   Restarts after the game is over
+## Features to come
+
+Running score?
+
+Score stored somewhere.
+

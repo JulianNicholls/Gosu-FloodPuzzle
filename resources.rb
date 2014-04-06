@@ -4,11 +4,24 @@ module FloodPuzzle
   # Resource Loader
   class ResourceLoader
     def self.fonts( window )
+      filename = 'media/good_times_rg.ttf'
+
+      if File.readable? filename
+        load_font( window, filename )
+      else
+        { button: Gosu::Font.new( window, 'Arial', 14 ),
+          moves:  Gosu::Font.new( window, 'Arial', 24 ),
+          header: Gosu::Font.new( window, 'Arial', 56 ),
+          info:   Gosu::Font.new( window, 'Arial', 30 )  }
+      end
+    end
+
+    def self.load_font( window, filename )
       {
-        button: Gosu::Font.new( window, 'Arial', 14 ),
-        moves:  Gosu::Font.new( window, 'Arial', 24 ),
-        header: Gosu::Font.new( window, 'Arial', 56 ),
-        info:   Gosu::Font.new( window, 'Arial', 30 )
+        button: Gosu::Font.new( window, filename, 14 ),
+        moves:  Gosu::Font.new( window, filename, 24 ),
+        header: Gosu::Font.new( window, filename, 56 ),
+        info:   Gosu::Font.new( window, filename, 30 )
       }
     end
 
