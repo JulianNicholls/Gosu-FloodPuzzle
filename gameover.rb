@@ -25,12 +25,12 @@ module FloodPuzzle
       say( 'Press Escape to Exit', @fonts[:info],
            :center, P_ORIGIN.y + P_SIZE.height * 4 / 5, BLUE )
     end
-  
+
     def score_with_commas
       # Work through, finding...
       # Three digit sections, preceded and followed by at least one digit and...
       # Replace with the digits followed by a comma
-    
+
       @window.score.to_s.gsub( /(\d)(?=(\d{3})+(?!\d))/, '\\1,' )
     end
   end
