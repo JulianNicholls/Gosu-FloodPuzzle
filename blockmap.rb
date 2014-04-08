@@ -38,9 +38,9 @@ module FloodPuzzle
     # the same colour as its neighbour above or to the left
 
     def setup_easier
-      (1..ROWS - 1).each do |y|
-        (1..COLUMNS - 1).each do |x|
-          set_neighbour_colour( x, y ) if rand( -1..COLOR_TABLE.size - 1 ) == -1
+      (1...ROWS).each do |y|
+        (1...COLUMNS).each do |x|
+          set_neighbour_colour( x, y ) if rand( -1...COLOR_TABLE.size ) == -1
         end
       end
     end
@@ -64,9 +64,9 @@ module FloodPuzzle
 
       # Debugging 'Auto' button
 
-      colour = best_colour if colour > COLOR_TABLE.size
+      colour = best_colour if colour >= COLOR_TABLE.size
 
-      @change_list.each { |x, y| @blocks[y][x] = colour }
+      @tl_list.each { |x, y| @blocks[y][x] = colour }
       @tlc = @blocks[0][0]
 
       true    # Changed colours
@@ -75,8 +75,8 @@ module FloodPuzzle
     # Every block the same colour?
 
     def game_over?
-      ROWS.times do |y|
-        COLUMNS.times { |x| return false if @blocks[y][x] != @tlc }
+      @blocks.each do |row|
+        return false if row.any? { |col| col != @tlc }
       end
 
       true
@@ -121,18 +121,22 @@ module FloodPuzzle
     def best_colour
       build_block_list
 
-      counts    = Array.new( COLOR_TABLE.size, 0 )
-      edges     = []
+      edges = []
 
-      @change_list.each do |x, y|
+      @tl_list.each do |x, y|
         neighbours( x, y ).each do |c, r|
           col = @blocks[r][c]
           edges << [col, c, r] if col != @tlc && !edges.include?( [col, c, r] )
         end
       end
 
-      edges.each { |col, _, _| counts[col] += 1 }
+      max_colour_count( edges )
+    end
 
+    def max_colour_count( edge_blocks )
+      counts = Array.new( COLOR_TABLE.size, 0 )
+
+      edge_blocks.each { |col, _, _| counts[col] += 1 }
       counts.index( counts.max )
     end
 
@@ -140,12 +144,10 @@ module FloodPuzzle
     # top-left corner and the same colour as it is
 
     def build_block_list
-      @change_list = [[0, 0]]
+      @tl_list = [[0, 0]]
 
-      @change_list.each do |x, y|
-        neighbours( x, y ).each do |c, r|
-          @change_list << [c, r] if candidate?( c, r )
-        end
+      @tl_list.each do |x, y|
+        neighbours( x, y ).each { |c, r| @tl_list << [c, r] if candidate?( c, r ) }
       end
     end
 
@@ -178,7 +180,7 @@ module FloodPuzzle
     # but set for visitation nevertheless
 
     def visited?( x, y )
-      @change_list.include?( [x, y] )
+      @tl_list.include?( [x, y] )
     end
   end
 end

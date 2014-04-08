@@ -9,6 +9,7 @@ require './blockmap'
 require './block'
 require './gameover'
 require './button'
+require './drawer'
 
 module FloodPuzzle
   # Colour Flooding Game
@@ -36,6 +37,7 @@ module FloodPuzzle
       @debug  = debug
       @easy   = easy
 
+      @drawer = Drawer.new( self )
       setup_buttons
 
       reset
@@ -68,6 +70,8 @@ module FloodPuzzle
       update_game_over
 
       update_flip if @position
+
+      @elapsed = (Time.now - @start).round unless @game_over
     end
 
     def update_game_over
@@ -95,39 +99,15 @@ module FloodPuzzle
     def draw
       draw_background
       @grid.draw( self )
-      draw_buttons
-      draw_moves
-      draw_time
+      @buttons.each { |b| b.draw }
+      @drawer.moves( @moves, @optimal )
+      @drawer.time( @elapsed )
 
       draw_overlays
     end
 
     def draw_background
       @images[:background].draw( 0, 0, 0 )
-    end
-
-    def draw_buttons
-      @buttons.each { |b| b.draw }
-    end
-
-    def draw_moves
-      font        = @fonts[:moves]
-      text        = 'Moves  '
-      size        = font.text_width( text )
-      move_colour = @moves <= @optimal ? GREEN : RED
-      font.draw( text, GAME_BORDER * 4, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
-      font.draw( "#{@moves} / #{@optimal}",
-                 GAME_BORDER * 4 + size, GAME_BORDER + 7, 4, 1, 1, move_colour )
-    end
-
-    def draw_time
-      @elapsed = (Time.now - @start).round unless @game_over
-
-      text = format( 'Time  %d:%02d', @elapsed / 60, @elapsed % 60 )
-      size = @fonts[:moves].measure( text )
-
-      left = WIDTH - (GAME_BORDER * 4) - size.width
-      @fonts[:moves].draw( text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
     end
 
     def draw_overlays
