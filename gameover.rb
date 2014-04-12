@@ -1,5 +1,4 @@
 require './constants'
-require './gosu_enhanced'
 require './overlaywindow.rb'
 
 module FloodPuzzle

@@ -1,5 +1,6 @@
+require 'gosu_enhanced'
+
 require './constants'
-require './gosu_enhanced'
 require './resources'
 
 module FloodPuzzle

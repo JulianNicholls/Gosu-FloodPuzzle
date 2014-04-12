@@ -1,8 +1,8 @@
 #! /usr/bin/env ruby
 
 require 'net/http'
+require 'gosu_enhanced'
 
-require './gosu_enhanced'
 require './constants'
 require './resources'
 require './blockmap'
@@ -28,8 +28,6 @@ module FloodPuzzle
     def initialize( debug, easy )
       super( WIDTH, HEIGHT, false, 200 )
 
-      self.caption = caption( debug, easy )
-
       @fonts  = ResourceLoader.fonts( self )
       @images = ResourceLoader.images( self )
       @sounds = ResourceLoader.sounds( self )
@@ -37,16 +35,18 @@ module FloodPuzzle
       @debug  = debug
       @easy   = easy
 
+      self.caption = caption
+
       @drawer = Drawer.new( self )
       setup_buttons
 
       reset
     end
 
-    def caption( debug, easy )
+    def caption
       caption = 'Gosu Flood Puzzle'
-      caption += ' (Easy)' if easy
-      caption += ' (Debug)' if debug
+      caption += ' (Easy)'  if @easy
+      caption += ' (Debug)' if @debug
 
       caption
     end
@@ -115,7 +115,7 @@ module FloodPuzzle
     end
 
     def button_down( btn_id )
-      instance_exec( &KEY_FUNCS[btn_id] )
+      instance_exec( &KEY_FUNCS[btn_id] ) if KEY_FUNCS.has_key? btn_id
     end
 
     private
