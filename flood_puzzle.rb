@@ -76,7 +76,7 @@ module FloodPuzzle
 
     def update_game_over
       if !@game_over && @grid.game_over?
-        @sounds[:tada][rand( @sounds[:tada].size )].play
+        @sounds[:tada][rand @sounds[:tada].size].play
         @score = calculate_score
         @game_over = true
 
