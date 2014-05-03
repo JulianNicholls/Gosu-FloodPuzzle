@@ -2,7 +2,7 @@ module FloodPuzzle
   # Constants for the Tetris Game
   module Constants
     include GosuEnhanced
-    
+
     GAME_BORDER   = 5
     COLUMNS       = 12
     ROWS          = 12

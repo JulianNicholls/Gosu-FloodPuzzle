@@ -26,7 +26,7 @@ module FloodPuzzle
     }
 
     def initialize( debug, easy )
-      super( WIDTH, HEIGHT, false, 200 )
+      super( WIDTH, HEIGHT, false, 100 )
 
       @fonts  = ResourceLoader.fonts( self )
       @images = ResourceLoader.images( self )
@@ -115,7 +115,7 @@ module FloodPuzzle
     end
 
     def button_down( btn_id )
-      instance_exec( &KEY_FUNCS[btn_id] ) if KEY_FUNCS.has_key? btn_id
+      instance_exec( &KEY_FUNCS[btn_id] ) if KEY_FUNCS.key? btn_id
     end
 
     private
@@ -147,7 +147,11 @@ module FloodPuzzle
             ", #{@score}"
 
       uri = URI( 'http://localhost:8888/flood-puzzle/index.php' )
-      Net::HTTP.post_form( uri, 'new' => str )
+      begin
+        Net::HTTP.post_form( uri, 'new' => str )
+      rescue
+        # There's nothing to be done if the connection can't be made.
+      end
     end
   end
 end
