@@ -1,6 +1,4 @@
-require 'pp'
-
-require './constants'
+require 'constants'
 
 module FloodPuzzle
   # Block Map
@@ -49,8 +47,7 @@ module FloodPuzzle
 
     def set_neighbour_colour( x, y )
       xd = rand( 2 )
-      yd = 1 - xd
-      @blocks[y][x] = @blocks[y - yd][x - xd]
+      @blocks[y][x] = @blocks[y - (1 - xd)][x - xd]
     end
 
     # Change the colour of the blocks rooted at the top-left corner.
@@ -155,10 +152,11 @@ module FloodPuzzle
 
     def neighbours( x, y )
       neigh = []
-      neigh << [x - 1, y] if in_grid?( x - 1, y )
-      neigh << [x + 1, y] if in_grid?( x + 1, y )
-      neigh << [x, y - 1] if in_grid?( x, y - 1 )
-      neigh << [x, y + 1] if in_grid?( x, y + 1 )
+
+      [-1, +1].each do |inc|
+        neigh << [x + inc, y] if in_grid?( x + inc, y )
+        neigh << [x, y + inc] if in_grid?( x, y + inc )
+      end
 
       neigh
     end

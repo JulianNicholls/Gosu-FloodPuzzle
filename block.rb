@@ -1,4 +1,4 @@
-require './constants'
+require 'constants'
 
 module FloodPuzzle
   # Hold a (x, y) position inside the FloodPuzzle grid

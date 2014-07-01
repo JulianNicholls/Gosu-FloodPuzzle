@@ -5,9 +5,13 @@ module FloodPuzzle
   class Drawer
     include Constants
 
-    def initialize( surface )
-      @window = surface
-      @fonts  = @window.fonts
+    def initialize( game )
+      @bg_image = game.images[:background]
+      @fonts    = game.fonts
+    end
+
+    def background
+      @bg_image.draw( 0, 0, 0 )
     end
 
     def moves( moves, optimal )

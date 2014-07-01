@@ -1,5 +1,5 @@
-require './constants'
-require './overlaywindow.rb'
+require 'constants'
+require 'overlaywindow.rb'
 
 module FloodPuzzle
   # Show the window when the game is over

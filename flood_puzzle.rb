@@ -1,22 +1,22 @@
-#! /usr/bin/env ruby
+#! /usr/bin/env ruby -I.
 
 require 'net/http'
 require 'gosu_enhanced'
 
-require './constants'
-require './resources'
-require './blockmap'
-require './block'
-require './gameover'
-require './button'
-require './drawer'
+require 'constants'
+require 'resources'
+require 'blockmap'
+require 'block'
+require 'gameover'
+require 'button'
+require 'drawer'
 
 module FloodPuzzle
   # Colour Flooding Game
   class Game < Gosu::Window
     include Constants
 
-    attr_reader :fonts, :score
+    attr_reader :images, :fonts, :score
 
     KEY_FUNCS = {
       Gosu::KbEscape =>  -> { close if @debug || @game_over },
@@ -28,16 +28,16 @@ module FloodPuzzle
     def initialize( debug, easy )
       super( WIDTH, HEIGHT, false, 100 )
 
+      @debug, @easy = debug, easy
+
+      self.caption = caption
+
       @fonts  = ResourceLoader.fonts( self )
       @images = ResourceLoader.images( self )
       @sounds = ResourceLoader.sounds( self )
 
-      @debug  = debug
-      @easy   = easy
-
-      self.caption = caption
-
       @drawer = Drawer.new( self )
+
       setup_buttons
 
       reset
@@ -75,43 +75,35 @@ module FloodPuzzle
     end
 
     def update_game_over
-      if !@game_over && @grid.game_over?
-        @sounds[:tada][rand @sounds[:tada].size].play
-        @score = calculate_score
-        @game_over = true
+      return if @game_over || !@grid.game_over?
 
-        post_game_score
-      end
+      @sounds[:tada][rand @sounds[:tada].size].play
+      @score = calculate_score
+      @game_over = true
+
+      post_game_score
     end
 
     def update_flip
       @buttons.each do |b|
-        if b.contains?( @position ) && @grid.change_colour( b.value )
-          @moves += 1
-          @sounds[:flip].play
-          break
-        end
+        next unless b.contains?( @position ) && @grid.change_colour( b.value )
+
+        @moves += 1
+        @sounds[:flip].play
+        break
       end
 
       @position = nil
     end
 
     def draw
-      draw_background
+      @drawer.background
       @grid.draw( self )
       @buttons.each { |b| b.draw }
       @drawer.moves( @moves, @optimal )
       @drawer.time( @elapsed )
 
-      draw_overlays
-    end
-
-    def draw_background
-      @images[:background].draw( 0, 0, 0 )
-    end
-
-    def draw_overlays
-      GameOverWindow.new( self ).draw && return if @game_over
+      draw_overlays if @game_over
     end
 
     def button_down( btn_id )
@@ -119,6 +111,10 @@ module FloodPuzzle
     end
 
     private
+
+    def draw_overlays
+      GameOverWindow.new( self ).draw
+    end
 
     def setup_buttons
       @buttons = []
@@ -147,11 +143,12 @@ module FloodPuzzle
             ", #{@score}"
 
       uri = URI( 'http://localhost:8888/flood-puzzle/index.php' )
+
       begin
         Net::HTTP.post_form( uri, 'new' => str )
       rescue
         # There's nothing to be done if the connection can't be made.
-        puts "Cannot save game score"
+        puts 'Cannot save game score'
       end
     end
   end

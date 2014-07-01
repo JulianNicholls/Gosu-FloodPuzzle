@@ -3,7 +3,7 @@
 There's not a lot to say... It's a colour flooding puzzle done with the Ruby
 [Gosu](http://www.libgosu.org/) Library.
 
-It uses the gosu_enhanced gem, which is abvailable from rubygems.org. just run 
+It uses the gosu_enhanced gem, which is available from rubygems.org. just run 
 bundle to obtain it.
 
 ## How to play
