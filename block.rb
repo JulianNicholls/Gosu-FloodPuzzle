@@ -2,15 +2,14 @@ require 'constants'
 
 module FloodPuzzle
   # Hold a (x, y) position inside the FloodPuzzle grid
-  class GridPoint < Struct.new( :column, :row )
-    include Constants
-
+  GridPoint = Struct.new( :column, :row ) do
     def offset( by_column, by_row )
       GridPoint.new( column + by_column, row + by_row )
     end
 
     def to_point
-      GRID_ORIGIN.offset( column * BLOCK_SIZE, row * BLOCK_SIZE )
+      Constants::GRID_ORIGIN.offset(
+        column * Constants::BLOCK_SIZE, row * Constants::BLOCK_SIZE )
     end
 
     def move_by!( by_column, by_row )
