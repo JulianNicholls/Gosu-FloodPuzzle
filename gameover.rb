@@ -24,23 +24,21 @@ module FloodPuzzle
     end
 
     def draw_header
-      say('GAME OVER', @fonts[:header],
+      say('GAME OVER', :header,
           :center, P_ORIGIN.y + P_SIZE.height / 6, BLUE)
     end
 
     def draw_score
-      say("SCORE: #{score_with_commas}", @fonts[:info],
+      say("SCORE: #{score_with_commas}", :info,
           :center, P_ORIGIN.y + P_SIZE.height * 2 / 5, RED)
     end
 
     def draw_instructions
-      info = @fonts[:info]
+      top     = P_ORIGIN.y
+      height  = P_SIZE.height
 
-      say('Press R to Restart', info,
-          :center, P_ORIGIN.y + P_SIZE.height * 3 / 5, BLUE)
-
-      say('Press Escape to Exit', info,
-          :center, P_ORIGIN.y + P_SIZE.height * 4 / 5, BLUE)
+      say('Press R to Restart', :info, :center, top + height * 3 / 5, BLUE)
+      say('Press Escape to Exit', :info, :center, top + height * 4 / 5, BLUE)
     end
 
     def score_with_commas
