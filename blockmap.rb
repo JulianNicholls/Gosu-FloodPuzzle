@@ -1,13 +1,19 @@
 require 'constants'
 
 module FloodPuzzle
+  # co-ordinate pair
+  Coord = Struct.new(:column, :row)
+
+  # Co-ordinate pair with its colour
+  Edge  = Struct.new(:colour, :coloumn, :row)
+
   # Block Map
   class BlockMap
     include Constants
 
     attr_reader :optimal
 
-    def initialize(easier = false)
+    def initialize(easier)
       setup_random
       setup_easier if easier
 
@@ -36,18 +42,18 @@ module FloodPuzzle
     # the same colour as its neighbour above or to the left
 
     def setup_easier
-      (1...ROWS).each do |y|
-        (1...COLUMNS).each do |x|
-          set_neighbour_colour(x, y) if rand(-1...COLOR_TABLE.size) == -1
+      (1...ROWS).each do |row|
+        (1...COLUMNS).each do |col|
+          set_neighbour_colour(col, row) if rand(-1...COLOR_TABLE.size) == -1
         end
       end
     end
 
     # Randomly choose either the block above or left to copy the colour from.
 
-    def set_neighbour_colour(x, y)
+    def set_neighbour_colour(col, row)
       xd = rand(2)
-      @blocks[y][x] = @blocks[y - (1 - xd)][x - xd]
+      @blocks[row][col] = @blocks[row - (1 - xd)][col - xd]
     end
 
     # Change the colour of the blocks rooted at the top-left corner.
@@ -63,7 +69,7 @@ module FloodPuzzle
 
       colour = best_colour if colour >= COLOR_TABLE.size
 
-      @tl_list.each { |x, y| @blocks[y][x] = colour }
+      @tl_list.each { |col, row| @blocks[row][col] = colour }
       @tlc = @blocks[0][0]
 
       true    # Changed colours
@@ -82,9 +88,10 @@ module FloodPuzzle
     # Draw the blocks
 
     def draw(window)
-      ROWS.times do |y|
-        COLUMNS.times do |x|
-          Block.draw(window, GridPoint.new(x, y), COLOR_TABLE[@blocks[y][x]])
+      ROWS.times do |row|
+        COLUMNS.times do |col|
+          Block.draw(window, GridPoint.new(col, row),
+                     COLOR_TABLE[@blocks[row][col]])
         end
       end
     end
@@ -121,8 +128,8 @@ module FloodPuzzle
 
       edges = []
 
-      @tl_list.each do |x, y|
-        neighbours(x, y).each do |c, r|
+      @tl_list.each do |col, row|
+        neighbours(col, row).each do |c, r|
           col = @blocks[r][c]
           edges << [col, c, r] if col != @tlc && !edges.include?([col, c, r])
         end
@@ -144,19 +151,24 @@ module FloodPuzzle
     def build_block_list
       @tl_list = [[0, 0]]
 
-      @tl_list.each do |x, y|
-        neighbours(x, y).each { |c, r| @tl_list << [c, r] if candidate?(c, r) }
+      @tl_list.each do |col, row|
+        neighbours(col, row).each do |c, r|
+          @tl_list << [c, r] if candidate?(c, r)
+        end
       end
     end
 
     # Return a list of the in-grid neighbours of the passed position
 
-    def neighbours(x, y)
+    def neighbours(col, row)
       neigh = []
 
       [-1, +1].each do |inc|
-        neigh << [x + inc, y] if in_grid?(x + inc, y)
-        neigh << [x, y + inc] if in_grid?(x, y + inc)
+        new_col = col + inc
+        new_row = row + inc
+
+        neigh << [new_col, row] if in_grid?(new_col, row)
+        neigh << [col, new_row] if in_grid?(col, new_row)
       end
 
       neigh
@@ -165,21 +177,21 @@ module FloodPuzzle
     # Bring together the visited test below and whether the position is part
     # of the top-left block
 
-    def candidate?(x, y)
-      !visited?(x, y) && @blocks[y][x] == @tlc
+    def candidate?(col, row)
+      !visited?(col, row) && @blocks[row][col] == @tlc
     end
 
     # Is the position inside the grid dimensions
 
-    def in_grid?(x, y)
-      x.between?(0, COLUMNS - 1) && y.between?(0, ROWS - 1)
+    def in_grid?(col, row)
+      col.between?(0, COLUMNS - 1) && row.between?(0, ROWS - 1)
     end
 
     # Is the position already in the list?, actually not necessarily visited,
     # but set for visitation nevertheless
 
-    def visited?(x, y)
-      @tl_list.include?([x, y])
+    def visited?(col, row)
+      @tl_list.include?([col, row])
     end
   end
 end
