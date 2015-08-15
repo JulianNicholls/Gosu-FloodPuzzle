@@ -46,8 +46,8 @@ module FloodPuzzle
 
     def caption
       caption = 'Gosu Flood Puzzle'
-      caption += ' (Easy)'  if @easy
-      caption += ' (Debug)' if @debug
+      caption += ' (Easy)'  if easy_game?
+      caption += ' (Debug)' if debug_set?
 
       caption
     end
@@ -57,7 +57,7 @@ module FloodPuzzle
     end
 
     def reset
-      @grid       = BlockMap.new(@easy)
+      @grid       = BlockMap.new(easy_game?)
       @optimal    = @grid.optimal
       @game_over  = false
       @position   = nil
@@ -78,7 +78,7 @@ module FloodPuzzle
     def update_game_over
       return if @game_over || !@grid.game_over?
 
-      @sounds[:tada][rand @sounds[:tada].size].play
+      @sounds[:tada].sample.play
       @score = calculate_score
       @game_over = true
 
@@ -86,8 +86,8 @@ module FloodPuzzle
     end
 
     def update_flip
-      @buttons.each do |b|
-        next unless b.contains?(@position) && @grid.change_colour(b.value)
+      @buttons.each do |btn|
+        next unless btn.contains?(@position) && @grid.change_colour(btn.value)
 
         @moves += 1
         @sounds[:flip].play
@@ -120,15 +120,15 @@ module FloodPuzzle
     def setup_buttons
       @buttons = []
 
-      left  = @debug ? GAME_BORDER + MARGIN : GAME_BORDER + 2 * MARGIN
+      left  = debug_set? ? GAME_BORDER + MARGIN : GAME_BORDER + 2 * MARGIN
       point = Point.new(left, HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE)
 
-      COLOR_TABLE.each_with_index do |c, idx|
-        @buttons << Button.new(self, point, c, idx)
+      COLOR_TABLE.each_with_index do |clr, idx|
+        @buttons << Button.new(self, point, clr, idx)
         point = point.offset(BLOCK_SIZE + MARGIN, 0)
       end
 
-      @buttons << TextButton.new(self, point, RED, 99, 'Auto') if @debug
+      @buttons << TextButton.new(self, point, RED, 99, 'Auto') if debug_set?
     end
 
     def calculate_score
@@ -151,6 +151,14 @@ module FloodPuzzle
         # There's nothing to be done if the connection can't be made.
         puts 'Cannot save game score'
       end
+    end
+
+    def debug_set?
+      @debug
+    end
+
+    def easy_game?
+      @easy
     end
   end
 end
