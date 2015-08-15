@@ -5,33 +5,34 @@ module FloodPuzzle
   class Drawer
     include Constants
 
-    def initialize( game )
+    def initialize(game)
       @bg_image = game.images[:background]
       @fonts    = game.fonts
     end
 
     def background
-      @bg_image.draw( 0, 0, 0 )
+      @bg_image.draw(0, 0, 0)
     end
 
-    def moves( moves, optimal )
+    def moves(moves, optimal)
       font        = @fonts[:moves]
       text        = 'Moves  '
-      size        = font.text_width( text )
+      size        = font.text_width(text)
       move_colour = moves <= optimal ? GREEN : RED
-      left, top   = GAME_BORDER * 4, GAME_BORDER + 7
+      left        = GAME_BORDER * 4
+      top         = GAME_BORDER + 7
 
-      font.draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
-      font.draw( "#{moves} / #{optimal}", left + size, top, 4, 1, 1, move_colour )
+      font.draw(text, left, top, 4, 1, 1, MOVES_COLOUR)
+      font.draw("#{moves} / #{optimal}", left + size, top, 4, 1, 1, move_colour)
     end
 
-    def time( elapsed )
+    def time(elapsed)
       font = @fonts[:moves]
-      text = format( 'Time  %d:%02d', elapsed / 60, elapsed % 60 )
-      size = font.measure( text )
+      text = format('Time  %d:%02d', elapsed / 60, elapsed % 60)
+      size = font.measure(text)
       left = WIDTH - (GAME_BORDER * 4) - size.width
 
-      font.draw( text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
+      font.draw(text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR)
     end
   end
 end

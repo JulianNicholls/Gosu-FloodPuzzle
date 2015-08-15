@@ -22,21 +22,22 @@ module FloodPuzzle
       Gosu::KbEscape =>  -> { close if @debug || @game_over },
       Gosu::KbR      =>  -> { reset if @game_over },
 
-      Gosu::MsLeft   =>  -> { @position = Point.new( mouse_x, mouse_y ) }
+      Gosu::MsLeft   =>  -> { @position = Point.new(mouse_x, mouse_y) }
     }
 
-    def initialize( debug, easy )
-      super( WIDTH, HEIGHT, false, 100 )
+    def initialize(debug, easy)
+      super(WIDTH, HEIGHT, false, 100)
 
-      @debug, @easy = debug, easy
+      @debug  = debug
+      @easy   = easy
 
       self.caption = caption
 
-      @fonts  = ResourceLoader.fonts( self )
-      @images = ResourceLoader.images( self )
-      @sounds = ResourceLoader.sounds( self )
+      @fonts  = ResourceLoader.fonts(self)
+      @images = ResourceLoader.images(self)
+      @sounds = ResourceLoader.sounds(self)
 
-      @drawer = Drawer.new( self )
+      @drawer = Drawer.new(self)
 
       setup_buttons
 
@@ -56,7 +57,7 @@ module FloodPuzzle
     end
 
     def reset
-      @grid       = BlockMap.new( @easy )
+      @grid       = BlockMap.new(@easy)
       @optimal    = @grid.optimal
       @game_over  = false
       @position   = nil
@@ -86,7 +87,7 @@ module FloodPuzzle
 
     def update_flip
       @buttons.each do |b|
-        next unless b.contains?( @position ) && @grid.change_colour( b.value )
+        next unless b.contains?(@position) && @grid.change_colour(b.value)
 
         @moves += 1
         @sounds[:flip].play
@@ -98,36 +99,36 @@ module FloodPuzzle
 
     def draw
       @drawer.background
-      @grid.draw( self )
-      @buttons.each { |b| b.draw }
-      @drawer.moves( @moves, @optimal )
-      @drawer.time( @elapsed )
+      @grid.draw(self)
+      @buttons.each(&:draw)
+      @drawer.moves(@moves, @optimal)
+      @drawer.time(@elapsed)
 
       draw_overlays if @game_over
     end
 
-    def button_down( btn_id )
-      instance_exec( &KEY_FUNCS[btn_id] ) if KEY_FUNCS.key? btn_id
+    def button_down(btn_id)
+      instance_exec(&KEY_FUNCS[btn_id]) if KEY_FUNCS.key? btn_id
     end
 
     private
 
     def draw_overlays
-      GameOverWindow.new( self ).draw
+      GameOverWindow.new(self).draw
     end
 
     def setup_buttons
       @buttons = []
 
       left  = @debug ? GAME_BORDER + MARGIN : GAME_BORDER + 2 * MARGIN
-      point = Point.new( left, HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE )
+      point = Point.new(left, HEIGHT - GAME_BORDER - MARGIN - BLOCK_SIZE)
 
       COLOR_TABLE.each_with_index do |c, idx|
-        @buttons << Button.new( self, point, c, idx )
-        point = point.offset( BLOCK_SIZE + MARGIN, 0 )
+        @buttons << Button.new(self, point, c, idx)
+        point = point.offset(BLOCK_SIZE + MARGIN, 0)
       end
 
-      @buttons << TextButton.new( self, point, RED, 99, 'Auto' ) if @debug
+      @buttons << TextButton.new(self, point, RED, 99, 'Auto') if @debug
     end
 
     def calculate_score
@@ -137,15 +138,15 @@ module FloodPuzzle
     end
 
     def post_game_score
-      stamp = Time.now.strftime( '%Y-%m-%d %H:%M' )
+      stamp = Time.now.strftime('%Y-%m-%d %H:%M')
       str = "#{stamp}, #{@moves}/#{@optimal}, " +
-            format( '%d:%02d', @elapsed / 60, @elapsed % 60 ) +
+            format('%d:%02d', @elapsed / 60, @elapsed % 60) +
             ", #{@score}"
 
-      uri = URI( 'http://localhost:8888/flood-puzzle/index.php' )
+      uri = URI('http://localhost:8080/flood-puzzle/index.php')
 
       begin
-        Net::HTTP.post_form( uri, 'new' => str )
+        Net::HTTP.post_form(uri, 'new' => str)
       rescue
         # There's nothing to be done if the connection can't be made.
         puts 'Cannot save game score'
@@ -157,5 +158,5 @@ end
 debug = ARGV.include? '--debug'
 easy  = ARGV.include? '--easy'
 
-window = FloodPuzzle::Game.new( debug, easy )
+window = FloodPuzzle::Game.new(debug, easy)
 window.show
