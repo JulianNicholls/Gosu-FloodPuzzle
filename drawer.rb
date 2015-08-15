@@ -16,7 +16,7 @@ module FloodPuzzle
 
     def moves(moves, optimal)
       font        = @fonts[:moves]
-      text        = 'Moves  '
+      text        = 'Moves '
       size        = font.text_width(text)
       move_colour = moves <= optimal ? GREEN : RED
       left        = GAME_BORDER * 4

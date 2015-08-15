@@ -20,12 +20,20 @@ module FloodPuzzle
     end
 
     def contains?(point)
-      point.x.between?(@origin.x, @origin.x + BLOCK_SIZE) &&
-        point.y.between?(@origin.y, @origin.y + BLOCK_SIZE)
+      point.x.between?(left, left + BLOCK_SIZE) &&
+        point.y.between?(top, top + BLOCK_SIZE)
     end
 
     def to_s
       "#{@origin} #{@colour} #{@value}"
+    end
+
+    def left
+      @origin.x
+    end
+
+    def top
+      @origin.y
     end
   end
 
