@@ -5,7 +5,7 @@ module FloodPuzzle
   Coord = Struct.new(:column, :row)
 
   # Co-ordinate pair with its colour
-  Edge  = Struct.new(:colour, :coloumn, :row)
+  Edge  = Struct.new(:colour, :column, :row)
 
   # Block Map
   class BlockMap

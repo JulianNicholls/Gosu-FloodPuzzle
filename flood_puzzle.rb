@@ -16,10 +16,10 @@ module FloodPuzzle
   class Game < Gosu::Window
     include Constants
 
-    attr_reader :images, :fonts, :score
+    attr_reader :score
 
     KEY_FUNCS = {
-      Gosu::KbEscape =>  -> { close if @debug || @game_over },
+      Gosu::KbEscape =>  -> { close if debug_set? || @game_over },
       Gosu::KbR      =>  -> { reset if @game_over },
 
       Gosu::MsLeft   =>  -> { @position = Point.new(mouse_x, mouse_y) }
@@ -33,8 +33,6 @@ module FloodPuzzle
 
       self.caption = caption
 
-      @fonts  = ResourceLoader.fonts(self)
-      @images = ResourceLoader.images(self)
       @sounds = ResourceLoader.sounds(self)
 
       @drawer = Drawer.new(self)

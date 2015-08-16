@@ -1,5 +1,6 @@
-require './constants'
-require './block'
+require 'constants'
+require 'block'
+require 'resources'
 
 module FloodPuzzle
   # Button class
@@ -42,6 +43,7 @@ module FloodPuzzle
     def initialize(window, origin, colour, value, text)
       super(window, origin, colour, value)
 
+      @font = ResourceLoader.fonts(window)[:button]
       @text = text
 
       measure_size
@@ -58,10 +60,11 @@ module FloodPuzzle
     # and about four letters more than the width.
 
     def measure_size
-      @text_size = @window.fonts[:button].measure(@text)
-      ave_width  = @text_size.width / @text.size
+      @text_size  = @font.measure(@text)
+      width       = @text_size.width
+      ave_width   = width / @text.size
 
-      @size = Size.new(@text_size.width + 4 * ave_width, @text_size.height * 2)
+      @size = Size.new(width + 4 * ave_width, @text_size.height * 2)
     end
 
     def draw_background
@@ -69,7 +72,6 @@ module FloodPuzzle
       @window.draw_rectangle(@origin, @size, 1, Gosu::Color::BLACK)
 
       # White interior
-
       @window.draw_rectangle(
         @origin.offset(1, 1), @size.deflate(2, 2), 1, Gosu::Color::WHITE
       )
@@ -78,10 +80,9 @@ module FloodPuzzle
     def draw_text
       # Passed colour used for text
 
-      @window.fonts[:button].draw(
+      @font.draw(
         @text, @origin.x + 2 * @text_size.width / @text.size,
-        @origin.y + @size.height / 4, 1, 1, 1, @colour
-      )
+        @origin.y + @size.height / 4, 1, 1, 1, @colour)
     end
   end
 end
