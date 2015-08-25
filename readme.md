@@ -3,7 +3,7 @@
 There's not a lot to say... It's a colour flooding puzzle done with the Ruby
 [Gosu](http://www.libgosu.org/) Library.
 
-It uses the gosu_enhanced gem, which is available from rubygems.org. just run 
+It uses the gosu_enhanced gem, which is available from rubygems.org. just run
 bundle to obtain it.
 
 ## How to play
@@ -35,8 +35,8 @@ for a given grid which I use as basis for the scoring.
 
 ## Updated in this version
 
-An option to use freeware font Good Times from Typodermic Fonts, Inc. 
-It can be downloaded [here](http://www.1001fonts.com/sans-serif-fonts.html). 
+An option to use freeware font Good Times from Typodermic Fonts, Inc.
+It can be downloaded [here](http://www.1001fonts.com/sans-serif-fonts.html).
 Otherwise, the system Arial font is used.
 
 ## Features to come

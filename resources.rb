@@ -27,18 +27,18 @@ module FloodPuzzle
 
     def self.images(window)
       {
-        background: Gosu::Image.new(window, 'media/background.png', true)
+        background: Gosu::Image.new('media/background.png')
       }
     end
 
     def self.sounds(window)
       {
-        flip: Gosu::Sample.new(window, 'media/Blip.wav'),
-        tada: [Gosu::Sample.new(window, 'media/tada.wav'),
-               Gosu::Sample.new(window, 'media/alleluia.wav'),
-               Gosu::Sample.new(window, 'media/shazam2.wav'),
-               Gosu::Sample.new(window, 'media/ww_kewl.wav'),
-               Gosu::Sample.new(window, 'media/yeehaw.wav')]
+        flip: Gosu::Sample.new('media/Blip.wav'),
+        tada: [Gosu::Sample.new('media/tada.wav'),
+               Gosu::Sample.new('media/alleluia.wav'),
+               Gosu::Sample.new('media/shazam2.wav'),
+               Gosu::Sample.new('media/ww_kewl.wav'),
+               Gosu::Sample.new('media/yeehaw.wav')]
       }
     end
   end
