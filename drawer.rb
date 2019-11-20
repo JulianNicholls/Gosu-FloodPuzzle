@@ -22,13 +22,8 @@ module FloodPuzzle
       left        = GAME_BORDER * 4
       top         = GAME_BORDER + 7
 
-<<<<<<< HEAD
       font.draw_text( text, left, top, 4, 1, 1, MOVES_COLOUR )
       font.draw_text( "#{moves} / #{optimal}", left + size, top, 4, 1, 1, move_colour )
-=======
-      @font.draw(text, left, top, 4, 1, 1, MOVES_COLOUR)
-      @font.draw("#{moves} / #{optimal}", left + size, top, 4, 1, 1, move_colour)
->>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
     end
 
     def time(elapsed)
@@ -36,11 +31,7 @@ module FloodPuzzle
       size = @font.measure(text)
       left = WIDTH - (GAME_BORDER * 4) - size.width
 
-<<<<<<< HEAD
       font.draw_text( text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
-=======
-      @font.draw(text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR)
->>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
     end
   end
 end

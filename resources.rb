@@ -27,11 +27,7 @@ module FloodPuzzle
 
     def self.images(window)
       {
-<<<<<<< HEAD
         background: Gosu::Image.new('media/background.png', tileable: true)
-=======
-        background: Gosu::Image.new('media/background.png')
->>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
       }
     end
 

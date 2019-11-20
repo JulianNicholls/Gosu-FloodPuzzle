@@ -50,26 +50,8 @@ module FloodPuzzle
     end
 
     def draw
-<<<<<<< HEAD
-      # Black outline
-      @window.draw_rectangle( @origin, @size, 1, Gosu::Color::BLACK )
-
-      # White interior
-
-      @window.draw_rectangle(
-        @origin.offset( 1, 1 ), @size.deflate( 2, 2 ), 1, Gosu::Color::WHITE
-      )
-
-      # Passed colour used for text
-
-      @window.fonts[:button].draw_text(
-        @text, @origin.x + 2 * @text_size.width / @text.size,
-        @origin.y + @size.height / 4, 1, 1, 1, @colour
-      )
-=======
       draw_background
       draw_text
->>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
     end
 
     private

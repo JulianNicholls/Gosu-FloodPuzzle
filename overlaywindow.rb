@@ -20,11 +20,7 @@ module FloodPuzzle
       left = (WIDTH - size.width) / 2   if left == :center
       top  = (HEIGHT - size.height) / 2 if top  == :center
 
-<<<<<<< HEAD
-      font.draw_text( text, x, y, 10, 1, 1, colour )
-=======
-      font.draw(text, left, top, 10, 1, 1, colour)
->>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
+      font.draw_text( text, left, top, 10, 1, 1, colour )
     end
   end
 end

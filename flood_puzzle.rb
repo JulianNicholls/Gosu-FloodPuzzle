@@ -147,11 +147,7 @@ module FloodPuzzle
         Net::HTTP.post_form(uri, 'new' => str)
       rescue
         # There's nothing to be done if the connection can't be made.
-<<<<<<< HEAD
-        puts "Cannot save game score"
-=======
         puts 'Cannot save game score'
->>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
       end
     end
 
