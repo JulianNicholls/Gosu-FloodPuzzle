@@ -1,5 +1,6 @@
-require './constants'
-require './block'
+require 'constants'
+require 'block'
+require 'resources'
 
 module FloodPuzzle
   # Button class
@@ -8,7 +9,7 @@ module FloodPuzzle
 
     attr_reader :value
 
-    def initialize( window, origin, colour, value )
+    def initialize(window, origin, colour, value)
       @window = window
       @origin = origin
       @colour = colour
@@ -16,30 +17,40 @@ module FloodPuzzle
     end
 
     def draw
-      Block.draw_absolute( @window, @origin, @colour )
+      Block.draw_absolute(@window, @origin, @colour)
     end
 
-    def contains?( point )
-      point.x.between?( @origin.x, @origin.x + BLOCK_SIZE ) &&
-      point.y.between?( @origin.y, @origin.y + BLOCK_SIZE )
+    def contains?(point)
+      point.x.between?(left, left + BLOCK_SIZE) &&
+        point.y.between?(top, top + BLOCK_SIZE)
     end
 
     def to_s
       "#{@origin} #{@colour} #{@value}"
     end
+
+    def left
+      @origin.x
+    end
+
+    def top
+      @origin.y
+    end
   end
 
   # Textual Button that sizes itself based on its text content
   class TextButton < Button
-    def initialize( window, origin, colour, value, text )
-      super( window, origin, colour, value )
+    def initialize(window, origin, colour, value, text)
+      super(window, origin, colour, value)
 
+      @font = ResourceLoader.fonts(window)[:button]
       @text = text
 
       measure_size
     end
 
     def draw
+<<<<<<< HEAD
       # Black outline
       @window.draw_rectangle( @origin, @size, 1, Gosu::Color::BLACK )
 
@@ -55,6 +66,10 @@ module FloodPuzzle
         @text, @origin.x + 2 * @text_size.width / @text.size,
         @origin.y + @size.height / 4, 1, 1, 1, @colour
       )
+=======
+      draw_background
+      draw_text
+>>>>>>> 82b2076ef091141ed039cd89c5da86e3a415a27a
     end
 
     private
@@ -63,10 +78,29 @@ module FloodPuzzle
     # and about four letters more than the width.
 
     def measure_size
-      @text_size = @window.fonts[:button].measure( @text )
-      ave_width  = @text_size.width / @text.size
+      @text_size  = @font.measure(@text)
+      width       = @text_size.width
+      ave_width   = width / @text.size
 
-      @size = Size.new( @text_size.width + 4 * ave_width, @text_size.height * 2 )
+      @size = Size.new(width + 4 * ave_width, @text_size.height * 2)
+    end
+
+    def draw_background
+      # Black outline
+      @window.draw_rectangle(@origin, @size, 1, Gosu::Color::BLACK)
+
+      # White interior
+      @window.draw_rectangle(
+        @origin.offset(1, 1), @size.deflate(2, 2), 1, Gosu::Color::WHITE
+      )
+    end
+
+    def draw_text
+      # Passed colour used for text
+
+      @font.draw(
+        @text, @origin.x + 2 * @text_size.width / @text.size,
+        @origin.y + @size.height / 4, 1, 1, 1, @colour)
     end
   end
 end
