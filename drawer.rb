@@ -17,8 +17,8 @@ module FloodPuzzle
       move_colour = moves <= optimal ? GREEN : RED
       left, top   = GAME_BORDER * 4, GAME_BORDER + 7
 
-      font.draw( text, left, top, 4, 1, 1, MOVES_COLOUR )
-      font.draw( "#{moves} / #{optimal}", left + size, top, 4, 1, 1, move_colour )
+      font.draw_text( text, left, top, 4, 1, 1, MOVES_COLOUR )
+      font.draw_text( "#{moves} / #{optimal}", left + size, top, 4, 1, 1, move_colour )
     end
 
     def time( elapsed )
@@ -27,7 +27,7 @@ module FloodPuzzle
       size = font.measure( text )
       left = WIDTH - (GAME_BORDER * 4) - size.width
 
-      font.draw( text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
+      font.draw_text( text, left, GAME_BORDER + 7, 4, 1, 1, MOVES_COLOUR )
     end
   end
 end

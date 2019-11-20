@@ -49,9 +49,9 @@ module FloodPuzzle
         @origin.offset( 1, 1 ), @size.deflate( 2, 2 ), 1, Gosu::Color::WHITE
       )
 
-      # Passed olour used for text
+      # Passed colour used for text
 
-      @window.fonts[:button].draw(
+      @window.fonts[:button].draw_text(
         @text, @origin.x + 2 * @text_size.width / @text.size,
         @origin.y + @size.height / 4, 1, 1, 1, @colour
       )
